@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hase - Shop</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --shopee-orange: #ee4d2d;
+            --bg-gray: #f5f5f5;
+            --card-bg: #ffffff;
+            --text-color: #000000;
+            --neon-green: #bbf200; 
+        }
+
+        /* biến nền tối */
+        [data-theme="dark"] {
+            --bg-gray: #0c0c0c;
+            --card-bg: #1e1e1e;
+            --text-color: #ffffff;
+        }
+
+        body { 
+            margin: 0; 
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
+            background-color: var(--bg-gray); 
+            color: var(--text-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* header nhộng lơ lửng */
+        header { 
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 1200px;
+            background: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 5px 0; 
+            border-radius: 50px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 1000;
+        }
+        [data-theme="dark"] header {
+            background: rgba(30, 30, 30, 0.9);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-container { display: flex; align-items: center; justify-content: space-between; padding: 5px 30px; }
+        .nav-container h1 { margin: 0; font-size: 22px; color: #000; font-weight: bold; }
+        [data-theme="dark"] .nav-container h1 { color: #fff; }
+        
+        .search-bar { flex-grow: 1; margin: 0 30px; position: relative; display: flex; }
+        .search-bar input { width: 100%; padding: 10px 15px; border: 1px solid rgba(0,0,0,0.1); border-radius: 20px; outline: none; }
+        .search-btn { background: var(--shopee-orange); border: none; color: white; padding: 0 18px; cursor: pointer; border-radius: 20px; margin-left: -45px; position: relative; z-index: 2; }
+
+        .feedback-link, .dark-toggle {
+            background: transparent;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #000000;
+            padding: 6px 14px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border-radius: 20px;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+        [data-theme="dark"] .feedback-link, [data-theme="dark"] .dark-toggle { border-color: rgba(255,255,255,0.2); color: #fff; }
+        .feedback-link:hover, .dark-toggle:hover { background: rgba(0, 0, 0, 0.05); }
+        [data-theme="dark"] .feedback-link:hover, [data-theme="dark"] .dark-toggle:hover { background: rgba(255, 255, 255, 0.1); }
+        .cart-icon { cursor: pointer; color: #000; }
+        [data-theme="dark"] .cart-icon { color: #fff; }
+
+    .product-card {
+        background: var(--card-bg);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        border-radius: 12px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        cursor: pointer; /* Makes it completely obvious you can click anywhere */
+    }
+
+        /* phần container video */
+        .hero-video-section {
+            position: relative;
+            width: 100%;
+            height: 100vh; 
+            background-color: #000;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-video-section iframe {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 115vw;
+            height: 65vw;
+            min-height: 115vh;
+            min-width: 205vh;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .hero-vignette-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(0,0,0,0.1) 20%, rgba(0,0,0,0.7) 100%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* Typography Wrapper with a smooth opacity transition */
+        .hero-content-wrapper {
+            position: relative;
+            z-index: 3;
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 80px; 
+            color: #ffffff;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            opacity: 1;
+        }
+
+        /* Class to hide text cleanly when unmuted */
+        .hero-content-wrapper.hidden {
+            opacity: 0;
+            transform: translateY(-20px);
+            pointer-events: none;
+        }
+
+        .hero-content-wrapper h2 {
+            font-size: 56px;
+            font-weight: 700;
+            line-height: 1.1;
+            margin: 0 0 10px 0;
+            letter-spacing: -1.5px;
+            max-width: 900px;
+        }
+
+        .hero-content-wrapper h3 {
+            font-size: 48px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.4); 
+            margin: 0 0 20px 0;
+            letter-spacing: -1px;
+        }
+        
+        .hero-content-wrapper h3 span {
+            color: var(--neon-green); 
+        }
+
+        .hero-content-wrapper p {
+            font-size: 18px;
+            max-width: 600px;
+            line-height: 1.5;
+            color: rgba(255, 255, 255, 0.7);
+            margin: 0 0 30px 0;
+        }
+
+        /* FIXED: Centered Pure Black Footer Styling */
+        .main-footer { 
+            background-color: #000000; 
+            color: #ffffff; 
+            padding: 40px 20px; 
+            margin-top: 40px; 
+            text-align: center;
+        }
+        .footer-container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            display: flex; 
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 30px; 
+        }
+        .footer-section h3 { 
+            font-size: 15px; 
+            color: #ffffff; 
+            margin-bottom: 15px; 
+            font-weight: bold;
+        }
+        .footer-section ul { 
+            list-style: none; 
+            padding: 0; 
+            margin: 0; 
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+        }
+        .footer-section ul li a { 
+            color: #aaaaaa; 
+            text-decoration: none; 
+            font-size: 13px; 
+            transition: color 0.2s ease;
+        }
+        .footer-section ul li a:hover { 
+            color: var(--shopee-orange); 
+        }
+        .footer-bottom { 
+            text-align: center; 
+            margin-top: 30px; 
+            padding-top: 20px; 
+            border-top: 1px solid rgba(255, 255, 255, 0.1); 
+            font-size: 12px; 
+            color: #666666;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .featured-text {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.4);
+            font-weight: bold;
+        }
+
+        .brand-logos-container {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            opacity: 0.5;
+        }
+        .brand-logos-container i {
+            color: #ffffff;
+            font-size: 24px;
+        }
+
+        .audio-toggle-btn {
+            position: fixed; /* Changes it from absolute layout to a floating element */
+            bottom: 40px;
+            left: 40px;
+            z-index: 9999; /* Forces it to stay on top of the video and text */
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.2s ease;
+}
+.audio-toggle-btn:hover { background: rgba(255, 255, 255, 0.2); }
+
+.scroll-down-arrow {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 20px;
+    animation: bounce 2s infinite;
+}
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-8px); }
+            60% { transform: translateY(-4px); }
+        }
+
+.section-container { 
+    max-width: 1200px; 
+    margin: 60px auto; 
+    width: 90%;
+    background: var(--card-bg); 
+    padding: 25px; 
+    border-radius: 16px; 
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+    transition: background-color 0.3s ease; 
+}
+
+.flash-sale-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 12px; }
+[data-theme="dark"] .flash-sale-header { border-bottom-color: rgba(255,255,255,0.05); }
+        
+.flash-sale-header h2 { color: var(--shopee-orange); margin: 0; font-style: italic; display: flex; align-items: center; }
+        
+/* hệ thống grid*/
+#catalog { 
+    display: grid; 
+    grid-template-columns: repeat(4, 1fr); /* 4 items per row on big screens */
+    gap: 20px; 
+    padding: 20px 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* 2. PRODUCT CARD CONTAINER */
+.product-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Keeps all cards on the same row exactly equal height */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    cursor: pointer;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* 3. FIX: PREVENTS THIN / STRETCHED IMAGES (FORCE PERFECT SQUARE) */
+.product-image-wrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 100%; /* This magic trick forces a 1:1 perfect aspect ratio square */
+    background-color: #f7f7f7;
+    overflow: hidden;
+}
+
+.product-image-wrapper img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Forces the photo to fill the square box beautifully without squishing */
+    object-position: center;
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image-wrapper img {
+    transform: scale(1.05); /* Smooth subtle zoom look when hovering over card */
+}
+
+/* 4. RESPONSIVE CONTROLS FOR ALL VIEWPORTS */
+        @media (max-width: 1200px) {
+            #catalog { grid-template-columns: repeat(3, 1fr); } /* 3 per row on laptops */
+    }
+        @media (max-width: 768px) {
+            #catalog { grid-template-columns: repeat(2, 1fr); gap: 12px; } /* 2 per row on tablet/mobile */
+    }
+
+        @media (max-width: 1024px) { 
+            #catalog { grid-template-columns: repeat(3, 1fr); } 
+            header { width: 95%; } 
+            .hero-content-wrapper h2 { font-size: 38px; }
+            .hero-content-wrapper h3 { font-size: 32px; }
+            .hero-brand-footer { display: none; }
+            .footer-section ul { flex-direction: column; gap: 10px; }
+        }
+
+.logout-btn {
+    border-color: rgba(238, 77, 45, 0.3) !important;
+    color: var(--shopee-orange) !important;
+    font-weight: 500;
+}
+        
+.logout-btn:hover {
+    background: rgba(238, 77, 45, 0.1) !important;
+}
+
+[data-theme="dark"] .logout-btn {
+        border-color: rgba(238, 77, 45, 0.5) !important;
+}
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nav-container">
+            <h1>Hase Shop</h1>
+            <div class="search-bar">
+                <input type="text" placeholder="Săn iPhone 0 Đồng - Đăng ký ngay!">
+                <button class="search-btn"><i class="fa fa-search"></i></button>
+            </div>
+
+            <div class="nav-actions" style="display: flex; align-items: center; gap: 10px;">
+                <button class="feedback-link" onclick="window.open('http://127.0.0.1:5500/feedback.html')">Feedback</button>
+                <button class="feedback-link" onclick="window.open('http://127.0.0.1:5500/aboutus.html')">About Us</button>
+                <button class="dark-toggle" id="themeBtn" title="Dark/Light">🌙</button>
+                <div class="cart-icon"><i class="fa fa-shopping-cart fa-lg"></i></div>
+                <button class="feedback-link logout-btn" id="logoutBtn" title="Đăng xuất">
+                    Đăng xuất
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="hero-video-section">
+        <iframe 
+            id="bgVideo"
+            src="https://www.youtube.com/embed/OSf4t0uK4AA?autoplay=1&mute=1&loop=1&playlist=OSf4t0uK4AA&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&playsinline=1&enablejsapi=1" 
+            frameborder="0" 
+            allow="autoplay; encrypted-media">
+        </iframe>
+        <div class="hero-vignette-overlay"></div>
+        
+        <div class="hero-content-wrapper" id="heroText">
+            <h2>Không gian truyền cảm hứng cho cuộc sống hiện đại</h2>
+            <h3>Nội thất cao cấp cho <span>ngôi nhà mơ ước của bạn</span></h3>
+            <p>Khám phá hàng loạt nội thất cho mái ấm của bạn ngay hôm nay.</p>
+        </div>
+
+        <div class="hero-brand-footer">
+            <button class="audio-toggle-btn" id="audioToggle" title="Mute/Unmute">
+                <i id="audioIcon" class="fa fa-volume-mute"></i>
+            </button>
+            
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <span class="featured-text">Featured In</span>
+                <div class="brand-logos-container">
+                    <i class="fab fa-cc-visa"></i>
+                    <i class="fab fa-cc-mastercard"></i>
+                    <i class="fab fa-stripe"></i>
+                    <i class="fab fa-paypal"></i>
+                </div>
+            </div>
+
+            <div class="scroll-down-arrow">
+                <i class="fa fa-arrow-down"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-container">
+        <div class="flash-sale-header">
+            <h2>FLASH SALE</h2>
+            <a href="#" style="color: var(--text-color); text-decoration: none; font-size: 14px; opacity: 0.7;">Xem tất cả ></a>
+                <div class="flash-sale-header-container" style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                    <h2 style="margin: 0; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;"></h2>
+                <div id="flashSaleTimer" style="background: #000; color: #fff; font-family: monospace; font-size: 18px; font-weight: bold; padding: 5px 10px; border-radius: 6px; letter-spacing: 1px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                01:00:00
+        </div>
+    </div>
+        </div>
+        <div id="catalog"></div>
+    </div>
+
+    <div class="section-container">
+        <div class="flash-sale-header">
+            <h2>FLASH SALE</h2>
+            <a href="#" style="color: var(--text-color); text-decoration: none; font-size: 14px; opacity: 0.7;">Xem tất cả ></a>
+        </div>
+        <div id="catalog"></div>
+    </div>
+
+    <div class="section-container">
+        <div class="flash-sale-header">
+            <h2>FLASH SALE</h2>
+            <a href="#" style="color: var(--text-color); text-decoration: none; font-size: 14px; opacity: 0.7;">Xem tất cả ></a>
+        </div>
+        <div id="catalog"></div>
+    </div>
+
+    <div class="section-container">
+        <div class="flash-sale-header">
+            <h2>FLASH SALE</h2>
+            <a href="#" style="color: var(--text-color); text-decoration: none; font-size: 14px; opacity: 0.7;">Xem tất cả ></a>
+        </div>
+        <div id="catalog"></div>
+    </div>
+
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>CHĂM SÓC KHÁCH HÀNG</h3>
+                <ul>
+                    <li><a href="#">Trung Tâm Trợ Giúp</a></li>
+                    <li><a href="#">Hase Shop Blog</a></li>
+                    <li><a href="#">Hướng Dẫn Mua Hàng</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>VỀ HASE</h3>
+                <ul>
+                    <li><a href="#">Giới Thiệu</a></li>
+                    <li><a href="#">Tuyển Dụng</a></li>
+                    <li><a href="#">Điều Khoản</a></li>
+                </ul>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Hase - All Rights Reserved</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+           (function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...argument)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="fza2vJmZHNOFv0OUizAbQ";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
+    </script>
+
+    <script src="./js/index.js"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
+    
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+    const body = document.body;
+    const themeBtn = document.getElementById("themeBtn");
+    const yearEl = document.getElementById("year");
+    const catalogGrid = document.getElementById("catalog");
+
+    // Add this inside your DOMContentLoaded event listener function
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    if (logoutBtn) {
+       logoutBtn.addEventListener("click", () => {
+        // 1. Confirm with the user before logging out
+        const confirmLogout = confirm("Bạn có chắc chắn muốn đăng xuất tài khoản không?");
+        
+        if (confirmLogout) {
+            // 2. Clear the specific active session key from memory
+            localStorage.removeItem("currentUser");
+            
+            // 3. Force-route the browser viewport immediately back to your security gateway
+            window.location.href = "./login.html";
+            }
+        });
+    }
+
+    // 1. Set the dynamic footer year
+    if (yearEl) {
+        yearEl.textContent = new Date().getFullYear();
+    }
+
+    // 2. Handle Dark/Light Theme Persistence 
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        if (themeBtn) themeBtn.textContent = '☀️';
+    }
+
+    if (themeBtn) {
+        themeBtn.addEventListener("click", () => {
+            let theme = document.documentElement.getAttribute('data-theme');
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+                themeBtn.textContent = '🌙';
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                themeBtn.textContent = '☀️';
+            }
+        });
+    }
+
+    // 3. RENDER MOCK API CATALOG ITEMS
+    // We grab the first 12 items from your generated 150-item "data" array to show on the homepage
+    const homePageItems = data.slice(0, 12);
+
+    if (catalogGrid) {
+        catalogGrid.innerHTML = ""; // Clear out any static placeholders
+
+        homePageItems.forEach(item => {
+            // Create a styled card container for each item
+            const card = document.createElement("div");
+            card.className = "product-card";
+
+            card.innerHTML = `
+                <div class="product-image-wrapper">
+                    <img src="${item.image}" alt="${item.name}" loading="lazy">
+                    ${item.stock < 10 ? `<span class="stock-badge">Sắp Cháy Hàng</span>` : ''}
+                </div>
+                <div class="product-info">
+                    <span class="product-brand">${item.brand}</span>
+                    <h4 class="product-title" title="${item.name}">${item.name}</h4>
+                    <div class="product-meta">
+                        <span class="product-rating">⭐ ${item.rating}</span>
+                        <span class="product-category">${item.category}</span>
+                    </div>
+                    <div class="product-footer-row">
+                        <span class="product-price">$${item.price}</span>
+                        <button class="add-to-cart-btn" onclick="alert('Đã thêm vào giỏ hàng!')">
+                            <i class="fa fa-shopping-cart"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            catalogGrid.appendChild(card);
+        });
+    }
+});
+
+        // YouTube Player binding engine
+        let player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('bgVideo', {
+                events: {
+                    'onReady': onPlayerReady
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            const audioToggle = document.getElementById('audioToggle');
+            const audioIcon = document.getElementById('audioIcon');
+            const heroText = document.getElementById('heroText');
+
+            // Explicitly force player playback to wake up from strict click gestures
+            event.target.playVideo();
+
+            audioToggle.addEventListener('click', () => {
+                if (player && typeof player.isMuted === 'function') {
+                    if (player.isMuted()) {
+                        player.unMute();
+                        audioIcon.className = "fa fa-volume-up";
+                        heroText.classList.add('hidden'); 
+                    } else {
+                        player.mute();
+                        audioIcon.className = "fa fa-volume-mute";
+                        heroText.classList.remove('hidden'); 
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hase - About Us</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="./css/img/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./css/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./css/img/favicon-16x16.png">
+    <link rel="icon" type="image/x-icon" href="./css/img/favicon.ico" />
+    <link rel="manifest" href="/site.webmanifest">
+    
+    <link rel="stylesheet" href="./css/aboutus.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lobster&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Serif+Display:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <a href="#main" class="skip-link">Bỏ qua tới nội dung chính</a>
+
+    <header>
+      <button
+        class="dark-toggle"
+        id="themeBtn"
+        aria-pressed="false"
+        title="Dark/Light"
+      >
+        🌙 / ☀️
+      </button>
+      <h1>Mua sắm mọi lúc, mọi nơi.</h1>
+    </header>
+    
+    <main id="main">
+      <section id="about" class="about">
+        <img src="./css/img/tải xuống1.png" alt="hase" />
+        <div>
+          <h2>Giới thiệu</h2>
+          <p>
+            Hase là một không gian mua sắm tiện lợi và hiệu quả, nơi mỗi
+            sản phẩm nội thất đều được tới tận tay bạn, với chất lượng tốt nhất có thể.
+          </p>
+        </div>
+      </section>
+
+      <button
+        class="nut"
+        onclick="window.open('http://127.0.0.1:5500/index.html')"
+      >
+        &lt;&lt; Trang chủ
+      </button>
+    </main>
+
+    <footer>
+      © <span id="year"></span> Hase - All Rights Reserved
+    </footer>
+
+    <script>
+        const themeBtn = document.getElementById('themeBtn');
+        
+        // Check for saved theme preferences, otherwise default to light
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        
+        // Update button icon dynamically based on the active theme
+        themeBtn.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+        themeBtn.setAttribute('aria-pressed', currentTheme === 'dark' ? 'true' : 'false');
+
+        themeBtn.addEventListener('click', () => {
+            let theme = document.documentElement.getAttribute('data-theme');
+            
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+                themeBtn.textContent = '🌙';
+                themeBtn.setAttribute('aria-pressed', 'false');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                themeBtn.textContent = '☀️';
+                themeBtn.setAttribute('aria-pressed', 'true');
+            }
+        });
+    </script>
+
+  </body>
+</html>

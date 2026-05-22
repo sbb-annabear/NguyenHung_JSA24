@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="./css/feedback.css" />
+    <link rel="apple-touch-icon" sizes="180x180" href="./css/img/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./css/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./css/img/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest"> 
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lobster&display=swap"
+      rel="stylesheet"
+    />
+    <title>Feedback - Hase</title>
+  </head>
+  <body>
+    <button
+      class="nut"
+      onclick="window.open('http://127.0.0.1:5500/index.html')"
+    >
+      < Trang chủ
+    </button>
+    <div class="container">
+      <header>
+        <h1>Phản hồi</h1>
+      </header>
+      <form id="feedbackForm">
+        <div class="form-group">
+          <label for="name">Họ và tên</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            placeholder="Nhập tên của bạn"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="example@domain.com"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="topic">Chủ đề</label>
+          <select id="topic" name="topic" required>
+            <option value="">-- Chọn chủ đề --</option>
+            <option value="service">Dịch vụ</option>
+            <option value="support">Hỗ trợ</option>
+            <option value="other">Khác</option>
+          </select>
+        </div>
+        <div class="form-group form-group-full">
+          <label for="message">Nội dung góp ý</label>
+          <textarea
+            id="message"
+            name="message"
+            rows="5"
+            placeholder="Nhập ý kiến của bạn..."
+            required
+          ></textarea>
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn-primary">Gửi ý kiến</button>
+          <button type="reset" class="btn-secondary">Xóa</button>
+          <div id="formMessage" class="message-box" style="display: none"></div>
+        </div>
+      </form>
+      <footer>© 2026 Hase - All Rights Reserved</footer>
+    </div>
+
+  <script src="./js/feedback.js"></script>
+  </body>
+</html>
